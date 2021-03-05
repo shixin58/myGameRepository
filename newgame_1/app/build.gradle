@@ -1,0 +1,25 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    useLibrary 'org.apache.http.legacy'
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "com.example.newgame_1"
+        minSdkVersion 14
+        targetSdkVersion 23
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile files('libs/jsoup-1.8.1.jar')
+}
