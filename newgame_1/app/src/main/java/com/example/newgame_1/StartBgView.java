@@ -19,8 +19,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class StartBgView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 
     private SurfaceHolder holder = null;
-    public Bitmap GameCacheMap = null, startbg, lan, yue, peach1, peach2, peach3, peach4, peach5, raindrop;
-    public int ScreenWidth, ScreenHeight, x, y, r = 100, time = 0, raintime = 0;
+    public Bitmap mBmGameCache = null, startbg, lan, yue, peach1, peach2, peach3, peach4, peach5, raindrop;
+    public int mScreenWidth, mScreenHeight, x, y, r = 100, time = 0, raintime = 0;
     public Random random = new Random();
     private boolean MainFlag = true, FlagR = true;
     private Paint paint1 = new Paint();
@@ -36,12 +36,12 @@ public class StartBgView extends SurfaceView implements SurfaceHolder.Callback, 
         holder = this.getHolder();
         holder.addCallback(this);
         DisplayMetrics dm = getResources().getDisplayMetrics();
-        ScreenWidth = dm.widthPixels;
-        ScreenHeight = dm.heightPixels;
-        x = ScreenWidth / 2;
-        y = ScreenHeight / 2;
-        GameCacheMap = Bitmap.createBitmap(ScreenWidth, ScreenHeight, Config.ARGB_8888);
-        startbg = BitmapFactory.decodeResource(getResources(), R.drawable.startbg);
+        mScreenWidth = dm.widthPixels;
+        mScreenHeight = dm.heightPixels;
+        x = mScreenWidth / 2;
+        y = mScreenHeight / 2;
+        mBmGameCache = Bitmap.createBitmap(mScreenWidth, mScreenHeight, Config.ARGB_8888);
+        startbg = BitmapFactory.decodeResource(getResources(), R.drawable.bg_start);
         startbg = condenseBgMap(startbg);
         init();
 //		paint1.setColor(Color.BLUE);
@@ -70,8 +70,8 @@ public class StartBgView extends SurfaceView implements SurfaceHolder.Callback, 
     public Bitmap condenseBgMap(Bitmap map) {
         int width = map.getWidth();
         int height = map.getHeight();
-        float scaleWidth = ((float) this.ScreenWidth) / width;
-        float scaleHeight = ((float) this.ScreenHeight) / height;
+        float scaleWidth = ((float) this.mScreenWidth) / width;
+        float scaleHeight = ((float) this.mScreenHeight) / height;
         Matrix matrix = new Matrix();
         matrix.postScale(scaleWidth, scaleHeight);
         map = Bitmap.createBitmap(map, 0, 0, width,
@@ -114,7 +114,7 @@ public class StartBgView extends SurfaceView implements SurfaceHolder.Callback, 
                     }
                 }
             }
-            Canvas c = new Canvas(GameCacheMap);
+            Canvas c = new Canvas(mBmGameCache);
             c.drawBitmap(startbg, 0, 0, null);
             for (GameInterFaceTwo gameInterFace : riandrops) {
                 c.drawBitmap(gameInterFace.getBitmap(), gameInterFace.getX(), gameInterFace.getY(), null);
@@ -141,7 +141,7 @@ public class StartBgView extends SurfaceView implements SurfaceHolder.Callback, 
             try {
                 if (holder != null) {
                     canvas = holder.lockCanvas();
-                    canvas.drawBitmap(GameCacheMap, 0, 0, null);
+                    canvas.drawBitmap(mBmGameCache, 0, 0, null);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -9,9 +9,9 @@ public class BombA implements IGameObject {
     private GameView gameView;
     private boolean IsDoT = false, IsDoB = false, IsDo = false, state = true, deaddirection = true;
 
-    public BombA(int x, int y, int model, GameView gameView) {
+    public BombA(int x, int y, int mode, GameView gameView) {
         this.gameView = gameView;
-        switch (model) {
+        switch (mode) {
             case 1:
                 this.bitmap = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.bullet_1);
                 break;
@@ -25,7 +25,7 @@ public class BombA implements IGameObject {
 
         this.x = x;
         this.y = y;
-        this.mode = model;
+        this.mode = mode;
         this.width = bitmap.getWidth();
         this.height = bitmap.getHeight();
         //this.speed=random.nextInt(6)+4;
@@ -73,17 +73,15 @@ public class BombA implements IGameObject {
                     } else {
                         deadspeed++;
                         y += deadspeed;
-                        if (y >= gameView.ScreenHeight)
+                        if (y >= gameView.mScreenHeight)
                             gameView.monsters.remove(this);
                     }
-
                 }
                 break;
-
             case 2:
                 if (state) {
                     x += speed;
-                    if (x >= gameView.ScreenWidth)
+                    if (x >= gameView.mScreenWidth)
                         gameView.monsters.remove(this);
                 } else {
                     x += 5;
@@ -97,16 +95,15 @@ public class BombA implements IGameObject {
                     } else {
                         deadspeed++;
                         y += deadspeed;
-                        if (y >= gameView.ScreenHeight)
+                        if (y >= gameView.mScreenHeight)
                             gameView.monsters.remove(this);
                     }
                 }
-
                 break;
             case 3:
                 if (state) {
                     x -= speed;
-                    if (x >= gameView.ScreenWidth)
+                    if (x >= gameView.mScreenWidth)
                         gameView.monsters.remove(this);
                 } else {
                     x -= 5;
@@ -120,11 +117,10 @@ public class BombA implements IGameObject {
                     } else {
                         deadspeed++;
                         y += deadspeed;
-                        if (y >= gameView.ScreenHeight)
+                        if (y >= gameView.mScreenHeight)
                             gameView.monsters.remove(this);
                     }
                 }
-
                 break;
         }
         return bitmap;
@@ -144,7 +140,6 @@ public class BombA implements IGameObject {
                 IsDoT = false;
                 IsDo = true;
             }
-
         }
 
         final boolean b = x1 + w1 >= x2 + 15 && y1 + h1 >= y2 && x1 <= x2 + w2 - 15 && y1 <= y2 + h2;
@@ -171,48 +166,47 @@ public class BombA implements IGameObject {
         return x1 + w1 >= x2 + 15 && y1 + h1 >= y2 && x1 <= x2 + w2 - 15 && y1 <= y2 + h2;
     }
 
-    public void IsImpact(SuperMario jTest) {
+    public void IsImpact(SuperMario hero) {
         switch (mode) {
             case 1:
             case 2:
-                switch (isCollisionWithRect(jTest.getX(), jTest.getY(), jTest.getWidth(), jTest.getHeight(), x, y, width, height)) {
+                switch (isCollisionWithRect(hero.getX(), hero.getY(), hero.getWidth(), hero.getHeight(), x, y, width, height)) {
                     case 0:
-                        if (jTest.now.size() == 1) {
-                            jTest.now.remove(this);
+                        if (hero.now.size() == 1) {
+                            hero.now.remove(this);
                         }
                         break;
                     case 1:
-                        if (jTest.now.size() != 0) {
-                            if (jTest.now.get(0) instanceof Road) {
-                                Road road = (Road) jTest.now.get(0);
-                                if (road.model != 3 && state)
-                                    jTest.state = false;
+                        if (hero.now.size() != 0) {
+                            if (hero.now.get(0) instanceof Road) {
+                                Road road = (Road) hero.now.get(0);
+                                if (road.mode != 3 && state)
+                                    hero.mAlive = false;
                             } else {
-                                jTest.now.clear();
+                                hero.now.clear();
                             }
                         }
-                        if (jTest.now.size() == 0) {
+                        if (hero.now.size() == 0) {
                             if (state)
-                                jTest.now.add(this);
+                                hero.now.add(this);
                         }
                         break;
                     case 2:
                         state = false;
-                        if (jTest.now.size() == 1) {
-                            jTest.now.remove(this);
+                        if (hero.now.size() == 1) {
+                            hero.now.remove(this);
                         }
                         break;
                     case 3:
-                        jTest.state = false;
+                        hero.mAlive = false;
                         break;
                 }
                 break;
             case 3:
-                if (isCollisionWithRect2(jTest.getX(), jTest.getY(), jTest.getWidth(), jTest.getHeight(), x, y, width, height)) {
-                    jTest.state = false;
+                if (isCollisionWithRect2(hero.getX(), hero.getY(), hero.getWidth(), hero.getHeight(), x, y, width, height)) {
+                    hero.mAlive = false;
                 }
                 break;
         }
-
     }
 }

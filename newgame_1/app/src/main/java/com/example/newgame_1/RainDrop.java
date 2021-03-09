@@ -38,11 +38,11 @@ public class RainDrop implements GameInterFaceTwo {
         this.raindrop = raindrop;
         int var = random.nextInt(100);
         if (var >= 30) {
-            this.x = random.nextInt(startBgView.ScreenWidth - raindrop.getWidth());
+            this.x = random.nextInt(startBgView.mScreenWidth - raindrop.getWidth());
             this.y = -raindrop.getHeight();
         } else {
             this.x = -raindrop.getWidth();
-            this.y = random.nextInt(startBgView.ScreenHeight - raindrop.getHeight());
+            this.y = random.nextInt(startBgView.mScreenHeight - raindrop.getHeight());
         }
     }
 
@@ -59,7 +59,7 @@ public class RainDrop implements GameInterFaceTwo {
     public Bitmap getBitmap() {
         x += speedx;
         y += speedy;
-        if (x >= startBgView.ScreenWidth - raindrop.getWidth() || y >= startBgView.ScreenHeight) {
+        if (x >= startBgView.mScreenWidth - raindrop.getWidth() || y >= startBgView.mScreenHeight) {
 //            raindrop.recycle();
 //            raindrop=null;
             startBgView.riandrops.remove(this);

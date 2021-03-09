@@ -53,7 +53,7 @@ public class FlyMonster implements IGameObject {
 
     @Override
     public Bitmap getBitmap() {
-        if (y >= gameView.ScreenHeight || x >= gameView.ScreenWidth || x <= -width)
+        if (y >= gameView.mScreenHeight || x >= gameView.mScreenWidth || x <= -width)
             gameView.monsters.remove(this);
         bitmap = sprites.get(index);
         if (count == 8) {
@@ -65,15 +65,6 @@ public class FlyMonster implements IGameObject {
         }
         count++;
         if (IsJump) {
-//			if(directionX){
-//				x+=3;
-//				if(x>gameView.ScreenWidth-width)
-//					directionX=false;
-//			}else{
-//				x-=3;
-//				if(x<0)
-//					directionX=true;
-//			}	
             if (directionY) {
                 speedY--;
                 y -= speedY;
@@ -93,7 +84,7 @@ public class FlyMonster implements IGameObject {
                 if (speed < 15)
                     speed++;
                 y += speed;
-                if (y >= gameView.ScreenHeight)
+                if (y >= gameView.mScreenHeight)
                     gameView.monsters.remove(this);
             }
 
@@ -122,10 +113,7 @@ public class FlyMonster implements IGameObject {
 
     public boolean isCollisionWithRect(int x1, int y1, int w1, int h1,
                                        int x2, int y2, int w2, int h2) {
-        if (x1 + w1 >= x2 + 15 && y1 + h1 >= y2 && x1 <= x2 + w2 - 15 && y1 <= y2 + h2) {
-            return true;
-        }
-        return false;
+        return x1 + w1 >= x2 + 15 && y1 + h1 >= y2 && x1 <= x2 + w2 - 15 && y1 <= y2 + h2;
     }
 
     public int isCollisionWithRect2(int x1, int y1, int w1, int h1,
@@ -146,20 +134,20 @@ public class FlyMonster implements IGameObject {
         return 0;
     }
 
-    public void IsImpact(SuperMario jTest) {
-        switch (isCollisionWithRect2(jTest.getX(), jTest.getY(), jTest.getWidth(), jTest.getHeight(), x, y, width, height)) {
+    public void IsImpact(SuperMario hero) {
+        switch (isCollisionWithRect2(hero.getX(), hero.getY(), hero.getWidth(), hero.getHeight(), x, y, width, height)) {
             case 1:
-                if (!jTest.YdirectionFlag) {
+                if (!hero.yDirectionFlag) {
                     if (!IsDead) {
-                        jTest.YdirectionFlag = true;
-                        jTest.speed = 10;
+                        hero.yDirectionFlag = true;
+                        hero.speed = 10;
                     }
                     IsDead = true;
                 }
                 break;
             case 2:
                 if (!IsDead)
-                    jTest.state = false;
+                    hero.mAlive = false;
                 break;
         }
     }
@@ -168,7 +156,6 @@ public class FlyMonster implements IGameObject {
         for (IGameObject obj : bitmaps) {
             if (obj instanceof Road) {
                 Road road = (Road) obj;
-                //if(road.model!=3){
                 if (isCollisionWithRect(x, y, width, height, road.getX(), road.getY(), road.getWidth(), road.getHeight())) {
                     IsJump = true;
                     speedY = 15;
@@ -176,7 +163,6 @@ public class FlyMonster implements IGameObject {
                 } else {
                     IsDo = true;
                 }
-                // }
             }
         }
     }

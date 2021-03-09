@@ -54,26 +54,26 @@ public class MainActivity extends Activity implements OnTouchListener {
             case MotionEvent.ACTION_DOWN:
                 switch (v.getId()) {
                     case R.id.left:
-                        gameView.jumpTest.IsMove = true;
-                        gameView.jumpTest.XdirectionFlag = false;
-                        gameView.jumpTest.first = 2;
-                        gameView.jumpTest.index = gameView.jumpTest.first;
-                        gameView.jumpTest.size = 4;
+                        gameView.mMario.mIsMove = true;
+                        gameView.mMario.xDirectionFlag = false;
+                        gameView.mMario.mMoveFirst = 2;
+                        gameView.mMario.mMoveIdx = gameView.mMario.mMoveFirst;
+                        gameView.mMario.mMoveSize = 4;
                         left.setBackgroundResource(R.drawable.key_left_red);
                         break;
                     case R.id.right:
-                        gameView.jumpTest.IsMove = true;
-                        gameView.jumpTest.XdirectionFlag = true;
-                        gameView.jumpTest.first = 0;
-                        gameView.jumpTest.index = gameView.jumpTest.first;
-                        gameView.jumpTest.size = 2;
+                        gameView.mMario.mIsMove = true;
+                        gameView.mMario.xDirectionFlag = true;
+                        gameView.mMario.mMoveFirst = 0;
+                        gameView.mMario.mMoveIdx = gameView.mMario.mMoveFirst;
+                        gameView.mMario.mMoveSize = 2;
                         right.setBackgroundResource(R.drawable.key_right_red);
                         break;
                     case R.id.jump:
-                        if (!gameView.jumpTest.IsJump && gameView.jumpTest != null && gameView.jumpTest.state && !gameView.jumpTest.Isdo) {
-                            gameView.jumpTest.Isdo = false;
-                            gameView.jumpTest.IsStop = false;
-                            gameView.jumpTest.IsJump = true;
+                        if (!gameView.mMario.mIsJump && gameView.mMario.mAlive && !gameView.mMario.Isdo) {
+                            gameView.mMario.Isdo = false;
+                            gameView.mMario.mIsStop = false;
+                            gameView.mMario.mIsJump = true;
                             jump.setBackgroundResource(R.drawable.key_jump_red);
                         }
                         break;
@@ -83,11 +83,11 @@ public class MainActivity extends Activity implements OnTouchListener {
                 switch (v.getId()) {
                     case R.id.left:
                         left.setBackgroundResource(R.drawable.key_left_blue);
-                        gameView.jumpTest.IsMove = false;
+                        gameView.mMario.mIsMove = false;
                         break;
                     case R.id.right:
                         right.setBackgroundResource(R.drawable.key_right_blue);
-                        gameView.jumpTest.IsMove = false;
+                        gameView.mMario.mIsMove = false;
                         break;
                     case R.id.jump:
                         jump.setBackgroundResource(R.drawable.key_jump_blue);

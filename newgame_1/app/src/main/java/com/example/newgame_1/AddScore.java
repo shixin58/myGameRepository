@@ -39,7 +39,7 @@ public class AddScore implements IGameObject {
         if (y <= startY - 150) {
 //        	if(score!=null)
 //        	score.recycle();
-            gameView.mys.remove(this);
+            gameView.mHeroes.remove(this);
             System.gc();
         }
         return score;

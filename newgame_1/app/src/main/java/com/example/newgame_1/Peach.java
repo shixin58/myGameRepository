@@ -5,13 +5,13 @@ import android.graphics.Bitmap;
 public class Peach implements IGameObject {
 
     private int x, y, startY, width, height, time = 0, limmit = 200, maxspeed = 0, speed = 0, speedtime = 0;
-    private Bitmap bitmap = null;
+    private Bitmap bitmap;
     private StartBgView startBgView;
 
     public Peach(int maxspeed, StartBgView startBgView) {
         this.startBgView = startBgView;
         this.maxspeed = maxspeed;
-        this.startY = startBgView.ScreenHeight;
+        this.startY = startBgView.mScreenHeight;
         if (startBgView.random.nextInt(70) <= 10) {
             bitmap = startBgView.lan;
         } else if (startBgView.random.nextInt(70) > 10 && startBgView.random.nextInt(70) <= 20) {
@@ -29,31 +29,27 @@ public class Peach implements IGameObject {
         }
         this.width = bitmap.getWidth();
         this.height = bitmap.getHeight();
-        this.x = startBgView.random.nextInt(startBgView.ScreenWidth - width);
+        this.x = startBgView.random.nextInt(startBgView.mScreenWidth - width);
         this.y = startY;
     }
 
     @Override
     public int getX() {
-        // TODO Auto-generated method stub
         return x;
     }
 
     @Override
     public int getY() {
-        // TODO Auto-generated method stub
         return y;
     }
 
     @Override
     public int getWidth() {
-        // TODO Auto-generated method stub
         return width;
     }
 
     @Override
     public int getHeight() {
-        // TODO Auto-generated method stub
         return height;
     }
 
@@ -84,7 +80,7 @@ public class Peach implements IGameObject {
                 } else {
                     bitmap = startBgView.peach5;
                 }
-                this.x = startBgView.random.nextInt(startBgView.ScreenWidth - width);
+                this.x = startBgView.random.nextInt(startBgView.mScreenWidth - width);
                 this.y = startY;
                 time = 0;
             }

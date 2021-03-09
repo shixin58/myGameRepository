@@ -8,31 +8,46 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SuperMario implements IGameObject {
-    public int x, y, width, height, speed = 20, speedTime = 0, count = 0, stop = 0, time = 0, speedDrop = 0;
-    public int index = 0, size = 2, first = 0;
-    private Bitmap source, bitmap, dead, cache;
+
+    public static final int MAX_SPEED = 25;
+
+    public int x, y, width, height, speed = MAX_SPEED, speedTime = 0, count = 0, stop = 0, mTimes = 0, speedDrop = 0;
+
+    public int mMoveIdx = 0, mMoveSize = 2, mMoveFirst = 0;
+
+    private Bitmap mSourceBm, bitmap, mDeadBm, cache;
+
     private GameView gameView;
-    public boolean IsJump = false, IsMove = false, IsStop = true, XdirectionFlag = true, IsAdd = true,
-            YdirectionFlag = true, Isdo = false, state = true, speedflag = true, test = false, stateYflag = true;
-    private List<Bitmap> sprites = new CopyOnWriteArrayList<>();
+
+    public boolean mIsJump = false, mIsMove = false, mIsStop = true, xDirectionFlag = true, IsAdd = true,
+            yDirectionFlag = true, Isdo = false, mAlive = true, speedflag = true, test = false, stateYflag = true;
+
+    private List<Bitmap> mSprites = new CopyOnWriteArrayList<>();
+
     public List<IGameObject> now = new CopyOnWriteArrayList<>();
 
     public SuperMario(int x, int y, GameView gameView) {
         this.gameView = gameView;
-        this.source = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.all_mario);
-        this.dead = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.mario13);
+        this.mSourceBm = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.all_mario);
+        this.mDeadBm = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.mario_dead);
         this.x = x;
-        this.width = source.getWidth() / 6;
-        this.height = source.getHeight();
+        this.width = mSourceBm.getWidth() / 6;
+        this.height = mSourceBm.getHeight();
         this.cache = Bitmap.createBitmap(width, height, Config.ARGB_8888);
         this.y = y - height;
-        this.speed = 20;
-        sprites.add(Bitmap.createBitmap(source, 0, 0, width - 2, height));
-        sprites.add(Bitmap.createBitmap(source, width, 0, width, height));
-        sprites.add(Bitmap.createBitmap(source, width * 2, 0, width, height));
-        sprites.add(Bitmap.createBitmap(source, width * 3 + 1, 0, width - 1, height));
-        sprites.add(Bitmap.createBitmap(source, width * 4, 0, width, height));
-        sprites.add(Bitmap.createBitmap(source, width * 5, 0, width, height));
+
+        // 向右静止
+        mSprites.add(Bitmap.createBitmap(mSourceBm, 0, 0, width - 2, height));
+        // 向右走
+        mSprites.add(Bitmap.createBitmap(mSourceBm, width, 0, width, height));
+        // 向左走
+        mSprites.add(Bitmap.createBitmap(mSourceBm, width * 2, 0, width, height));
+        // 向左静止
+        mSprites.add(Bitmap.createBitmap(mSourceBm, width * 3 + 1, 0, width - 1, height));
+        // 向右跳
+        mSprites.add(Bitmap.createBitmap(mSourceBm, width * 4, 0, width, height));
+        // 向左跳
+        mSprites.add(Bitmap.createBitmap(mSourceBm, width * 5, 0, width, height));
     }
 
     public int getX() {
@@ -60,15 +75,17 @@ public class SuperMario implements IGameObject {
 
     @Override
     public Bitmap getBitmap() {
-        if (!state) {
-            bitmap = dead;
-            time++;
-            if (time >= 20) {
+        if (!mAlive) {
+            // 死亡
+            bitmap = mDeadBm;
+            mTimes++;
+            if (mTimes >= MAX_SPEED) {
                 if (speedflag) {
-                    speed = 20;
+                    speed = MAX_SPEED;
                     speedflag = false;
                 }
                 if (stateYflag) {
+                    // 向上减速
                     y -= speed;
                     speed--;
                     if (speed <= 0) {
@@ -78,100 +95,93 @@ public class SuperMario implements IGameObject {
                 } else {
                     speed++;
                     y += speed;
-                    if (y > gameView.ScreenHeight)
-                        gameView.mys.remove(this);
+                    if (y > gameView.mScreenHeight) {
+                        gameView.mHeroes.remove(this);
+                    }
                 }
             }
-
         } else {
-            if (IsMove) {
-                if (!IsJump) {
-                    bitmap = sprites.get(index);
+            if (mIsMove) {
+                if (!mIsJump) {
+                    bitmap = mSprites.get(mMoveIdx);
                     if (count == 5) {
-                        index++;
-                        if (index == size) {
-                            index = first;
+                        mMoveIdx++;
+                        if (mMoveIdx == mMoveSize) {
+                            mMoveIdx = mMoveFirst;
                         }
                         count = 0;
                     }
                     count++;
-
-
                 }
                 stop++;
                 if (stop == 1) {
-                    if (XdirectionFlag) {
-                        if (x <= gameView.ScreenWidth - width)
+                    if (xDirectionFlag) {
+                        if (x <= gameView.mScreenWidth - width) {
                             x += 5;
+                        }
                     } else {
-                        if (x > 0)
+                        if (x > 0) {
                             x -= 5;
+                        }
                     }
                     stop = 0;
                 }
-
             } else {
-                if (XdirectionFlag) {
-                    bitmap = sprites.get(0);
+                // 静止
+                if (xDirectionFlag) {
+                    // 向右
+                    bitmap = mSprites.get(0);
                 } else {
-                    bitmap = sprites.get(3);
+                    bitmap = mSprites.get(3);
                 }
             }
             if (Isdo) {
-                if (!IsJump) {
-                    //if(speed>0){
-//						if(speedTime>=4){
-//							speed--;
-//							speedTime=0;
-//						}
-//						speedTime++;
-//				    	y+=speed;
-                    if (speedDrop < 20)
-                        //if(speedTime>=2){
+                if (!mIsJump) {
+                    if (speedDrop < MAX_SPEED) {
                         speedDrop++;
-                    //speedTime=0;
-                    //}
+                    }
                     speedTime++;
                     y += speedDrop;
-                    if (y > gameView.ScreenHeight)
-                        gameView.mys.remove(this);
-                    //}
+                    if (y > gameView.mScreenHeight) {
+                        gameView.mHeroes.remove(this);
+                    }
                 }
             }
-            if (!IsJump) {
+            if (!mIsJump) {
                 if (now.size() == 1) {
-                    //setY(now.get(0).getY()-height);
                     if (now.get(0) instanceof BombA) {
-
                         BombA bombA = (BombA) now.get(0);
                         switch (bombA.mode) {
                             case 1:
                                 setY(now.get(0).getY() - height);
-                                if (x > 0)
+                                if (x > 0) {
                                     x -= bombA.speed;
+                                }
                                 break;
                             case 2:
                                 setY(now.get(0).getY() - height);
-                                if (x < gameView.ScreenWidth - width)
+                                if (x < gameView.mScreenWidth - width) {
                                     x += bombA.speed;
+                                }
                                 break;
                         }
                     } else {
                         Road road = (Road) now.get(0);
-                        if (road.model == 1) {
+                        if (road.mode == 1) {
                             Isdo = false;
-                            if (!IsJump)
+                            if (!mIsJump) {
                                 setY(now.get(0).getY() - height);
+                            }
                         } else {
                             setY(now.get(0).getY() - height);
                         }
                     }
                 }
             }
-            if (IsStop) {
-                IsJump = false;
-                speed = 20;
-                YdirectionFlag = true;
+            if (mIsStop) {
+                mIsJump = false;
+                speed = MAX_SPEED;
+                yDirectionFlag = true;
             }
         }
         return bitmap;
@@ -179,56 +189,50 @@ public class SuperMario implements IGameObject {
 
     public boolean isCollisionWithRect(int x1, int y1, int w1, int h1,
                                        int x2, int y2, int w2, int h2) {
-        if (x1 + w1 >= x2 + 10 && y1 + h1 >= y2 && x1 <= x2 + w2 - 10 && y1 + h1 / 2 <= y2) {
-            return true;
-        }
-        return false;
+        return x1 + w1 >= x2 + 10 && y1 + h1 >= y2 && x1 <= x2 + w2 - 10 && y1 + h1 / 2 <= y2;
     }
 
     public boolean isCollisionWithRect2(int x1, int y1, int w1, int h1,
                                         int x2, int y2, int w2, int h2) {
-        if (x1 + w1 >= x2 && y1 + h1 >= y2 && x1 <= x2 + w2 && y1 <= y2 + h2) {
-            return true;
-        }
-        return false;
+        return x1 + w1 >= x2 && y1 + h1 >= y2 && x1 <= x2 + w2 && y1 <= y2 + h2;
     }
 
-    public void IsImpact(List<IGameObject> bitmaps) {
-        if (state) {
-            if (IsJump) {
-                if (XdirectionFlag) {
-                    bitmap = sprites.get(4);
+    public void IsImpact(List<IGameObject> props) {
+        if (mAlive) {
+            if (mIsJump) {
+                if (xDirectionFlag) {
+                    // 向右
+                    bitmap = mSprites.get(4);
                 } else {
-                    bitmap = sprites.get(5);
+                    bitmap = mSprites.get(5);
                 }
-                if (YdirectionFlag) {
+                if (yDirectionFlag) {
+                    // 向上
                     y -= speed;
                     speed--;
                     if (speed <= 0) {
                         speed = 0;
-                        YdirectionFlag = false;
+                        yDirectionFlag = false;
                     }
                 } else {
                     if (speed <= 15) {
                         speed++;
                     }
                     y += speed;
-                    if (y > gameView.ScreenHeight)
-                        gameView.mys.remove(this);
+                    if (y > gameView.mScreenHeight) {
+                        gameView.mHeroes.remove(this);
+                    }
                 }
             }
 
-            for (IGameObject obj : bitmaps) {
-                if (obj instanceof Road) {
-                    Road road = (Road) obj;
+            for (IGameObject prop : props) {
+                if (prop instanceof Road) {
+                    Road road = (Road) prop;
                     if (isCollisionWithRect(x, y, width, height, road.getX(), road.getY(), road.getWidth(), road.getHeight())) {
-                        if (now.size() != 0)
-                            now.clear();
-                        if (now.size() == 0) {
-                            now.add(road);
-                        }
+                        now.clear();
+                        now.add(road);
                     } else {
-                        switch (road.model) {
+                        switch (road.mode) {
                             case 0:
                                 if (now.size() == 1) {
                                     now.remove(road);
@@ -237,8 +241,9 @@ public class SuperMario implements IGameObject {
                                 if (now.size() == 1) {
                                     now.remove(road);
                                 }
-                                if (!IsJump)
+                                if (!mIsJump) {
                                     Isdo = true;
+                                }
                             case 3:
                                 if (now.size() == 1) {
                                     now.remove(road);
@@ -248,11 +253,13 @@ public class SuperMario implements IGameObject {
                     }
                 }
             }
+
             if (now.size() == 1) {
-                if (isCollisionWithRect2(x, y, width, height, now.get(0).getX(), now.get(0).getY(), now.get(0).getWidth(), now.get(0).getHeight())) {
+                IGameObject prop = now.get(0);
+                if (isCollisionWithRect2(x, y, width, height, prop.getX(), prop.getY(), prop.getWidth(), prop.getHeight())) {
                     Isdo = false;
                     speedDrop = 0;
-                    IsStop = true;
+                    mIsStop = true;
                 }
             }
         }

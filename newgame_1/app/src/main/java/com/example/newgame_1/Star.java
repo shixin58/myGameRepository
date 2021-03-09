@@ -90,7 +90,7 @@ public class Star implements IGameObject {
                     canvas.drawBitmap(bitmap, 0, 0, null);
                     canvas.restore();
                 }
-                if (x >= gameView.ScreenWidth || x <= -width || y >= gameView.ScreenHeight) {
+                if (x >= gameView.mScreenWidth || x <= -width || y >= gameView.mScreenHeight) {
                     IsStop = true;
                     time++;
                     if (time >= limmittime) {
@@ -102,7 +102,7 @@ public class Star implements IGameObject {
                             bitmap = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.star_my);
                         }
                         limmittime = gameView.random.nextInt(80) + 80;
-                        x = gameView.random.nextInt(gameView.ScreenWidth - 200) + 100;
+                        x = gameView.random.nextInt(gameView.mScreenWidth - 200) + 100;
                         y = -100;
                         IsStop = false;
                         time = 0;

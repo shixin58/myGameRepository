@@ -8,13 +8,13 @@ import android.graphics.Matrix;
  * Created by Administrator on 2017-02-15.
  */
 public class BgMap implements IGameObject {
-    private GameView myGameView;
-    private Bitmap bg = null;
+    private GameView gameView;
+    private Bitmap bg;
     private int x = 0, y = 0, width, height;
 
     public BgMap(GameView myGameView) {
-        this.myGameView = myGameView;
-        this.bg = BitmapFactory.decodeResource(myGameView.getResources(), R.drawable.mainbg);
+        this.gameView = myGameView;
+        this.bg = BitmapFactory.decodeResource(myGameView.getResources(), R.drawable.bg_main);
         this.bg = condenseBgMap(bg);
         this.width = bg.getWidth();
         this.height = bg.getHeight();
@@ -23,8 +23,8 @@ public class BgMap implements IGameObject {
     public Bitmap condenseBgMap(Bitmap map) {
         int width = map.getWidth();
         int height = map.getHeight();
-        float scaleWidth = ((float) this.myGameView.ScreenWidth) / width;
-        float scaleHeight = ((float) this.myGameView.ScreenHeight) / height;
+        float scaleWidth = ((float) this.gameView.mScreenWidth) / width;
+        float scaleHeight = ((float) this.gameView.mScreenHeight) / height;
         Matrix matrix = new Matrix();
         matrix.postScale(scaleWidth, scaleHeight);
         map = Bitmap.createBitmap(map, 0, 0, width,

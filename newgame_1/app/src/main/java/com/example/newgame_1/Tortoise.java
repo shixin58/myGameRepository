@@ -36,6 +36,7 @@ public class Tortoise implements IGameObject {
             size = 4;
             first = 2;
         }
+
         sprites.add(Bitmap.createBitmap(bitmap, 0, 0, width, height));
         sprites.add(Bitmap.createBitmap(bitmap, width, 0, width, height));
         sprites.add(Bitmap.createBitmap(bitmap, 2 * width, 0, width, height));
@@ -80,7 +81,7 @@ public class Tortoise implements IGameObject {
                     speedY++;
                 }
                 y += speedY;
-                if (y >= gameView.ScreenHeight)
+                if (y >= gameView.mScreenHeight)
                     gameView.monsters.remove(this);
             }
         }
@@ -98,7 +99,7 @@ public class Tortoise implements IGameObject {
                 switch (mode) {
                     case 1:
                         if (directionX) {
-                            if (x >= gameView.ScreenWidth - width) {
+                            if (x >= gameView.mScreenWidth - width) {
                                 first = 2;
                                 index = first;
                                 size = 4;
@@ -133,7 +134,7 @@ public class Tortoise implements IGameObject {
                 if (IsMove) {
                     if (sleepdirect) {
                         x += 12;
-                        if (x >= gameView.ScreenWidth - width) {
+                        if (x >= gameView.mScreenWidth - width) {
                             sleepdirect = false;
                         }
                     } else {
@@ -150,7 +151,7 @@ public class Tortoise implements IGameObject {
                         time = 0;
                     }
                 }
-                if (x >= gameView.ScreenWidth || x <= -width) {
+                if (x >= gameView.mScreenWidth || x <= -width) {
                     gameView.monsters.remove(this);
                 }
                 map = sprites.get(4);
@@ -169,7 +170,7 @@ public class Tortoise implements IGameObject {
                         dropSpeed++;
                     y += dropSpeed;
                 }
-                if (x <= -width || x >= gameView.ScreenWidth || y >= gameView.ScreenHeight)
+                if (x <= -width || x >= gameView.mScreenWidth || y >= gameView.mScreenHeight)
                     gameView.monsters.remove(this);
                 break;
         }
@@ -179,10 +180,7 @@ public class Tortoise implements IGameObject {
 
     public boolean isCollisionWithRect3(int x1, int y1, int w1, int h1,
                                         int x2, int y2, int w2, int h2) {
-        if (x1 + w1 >= x2 + 15 && y1 + h1 >= y2 && x1 <= x2 + w2 - 15 && y1 <= y2 + h2) {
-            return true;
-        }
-        return false;
+        return x1 + w1 >= x2 + 15 && y1 + h1 >= y2 && x1 <= x2 + w2 - 15 && y1 <= y2 + h2;
     }
 
     public int isCollisionWithRect2(int x1, int y1, int w1, int h1,
@@ -210,62 +208,58 @@ public class Tortoise implements IGameObject {
                 }
                 return 1;
             }
-
         }
         return 0;
     }
 
     public boolean isCollisionWithRect(int x1, int y1, int w1, int h1,
                                        int x2, int y2, int w2, int h2) {
-        if (x1 + w1 >= x2 + 10 && y1 + h1 >= y2 && x1 <= x2 + w2 - 10 && y1 + h1 * 3 / 4 <= y2) {
-            return true;
-        }
-        return false;
+        return x1 + w1 >= x2 + 10 && y1 + h1 >= y2 && x1 <= x2 + w2 - 10 && y1 + h1 * 3 / 4 <= y2;
     }
 
-    public void IsImpact(SuperMario jTest) {
+    public void IsImpact(SuperMario hero) {
         if (state == 2) {
-            if (jTest.IsJump && !jTest.Isdo) {
-                if (!jTest.YdirectionFlag) {
-                    switch (isCollisionWithRect2(jTest.getX(), jTest.getY(), jTest.getWidth(), jTest.getHeight(), x, y, width, height)) {
+            if (hero.mIsJump && !hero.Isdo) {
+                if (!hero.yDirectionFlag) {
+                    switch (isCollisionWithRect2(hero.getX(), hero.getY(), hero.getWidth(), hero.getHeight(), x, y, width, height)) {
                         case 1:
                             if (!IsMove) {
                                 IsMove = true;
                             } else {
-                                jTest.YdirectionFlag = true;
-                                jTest.speed = 12;
+                                hero.yDirectionFlag = true;
+                                hero.speed = 12;
                                 IsMove = false;
                                 time = 0;
                             }
                             break;
                     }
                 }
-            } else if (!jTest.IsJump && !jTest.Isdo) {
+            } else if (!hero.mIsJump && !hero.Isdo) {
                 if (state == 1) {
-                    switch (isCollisionWithRect2(jTest.getX(), jTest.getY(), jTest.getWidth(), jTest.getHeight(), x, y, width, height)) {
+                    switch (isCollisionWithRect2(hero.getX(), hero.getY(), hero.getWidth(), hero.getHeight(), x, y, width, height)) {
                         case 1:
                             state = 2;
                             break;
                         case 2:
-                            jTest.state = false;
+                            hero.mAlive = false;
                             break;
                     }
                 } else if (state == 2) {
                     if (IsMove) {
-                        switch (isCollisionWithRect2(jTest.getX(), jTest.getY(), jTest.getWidth(), jTest.getHeight(), x, y, width, height)) {
+                        switch (isCollisionWithRect2(hero.getX(), hero.getY(), hero.getWidth(), hero.getHeight(), x, y, width, height)) {
                             case 1:
                                 IsMove = false;
                                 break;
                             case 2:
-                                jTest.state = false;
+                                hero.mAlive = false;
                                 break;
                         }
                     } else {
-                        switch (isCollisionWithRect2(jTest.getX(), jTest.getY(), jTest.getWidth(), jTest.getHeight(), x, y, width, height)) {
+                        switch (isCollisionWithRect2(hero.getX(), hero.getY(), hero.getWidth(), hero.getHeight(), x, y, width, height)) {
                             case 1:
-                                jTest.YdirectionFlag = true;
-                                jTest.speed = 12;
-                                jTest.IsJump = true;
+                                hero.yDirectionFlag = true;
+                                hero.speed = 12;
+                                hero.mIsJump = true;
                                 IsMove = true;
                                 break;
                         }
@@ -273,22 +267,17 @@ public class Tortoise implements IGameObject {
                 }
             }
         } else if (state == 1) {
-            switch (isCollisionWithRect2(jTest.getX(), jTest.getY(), jTest.getWidth(), jTest.getHeight(), x, y, width, height)) {
+            switch (isCollisionWithRect2(hero.getX(), hero.getY(), hero.getWidth(), hero.getHeight(), x, y, width, height)) {
                 case 1:
-                    if (!jTest.YdirectionFlag) {
-                        jTest.YdirectionFlag = true;
-                        jTest.speed = 12;
+                    if (!hero.yDirectionFlag) {
+                        hero.yDirectionFlag = true;
+                        hero.speed = 12;
                         state = 2;
                     }
                     break;
                 case 2:
-                    //if(state==1){
-                    //jTest.state=false;
-                    //}else if(state==2&&IsMove){
-                    jTest.state = false;
-                    //}
+                    hero.mAlive = false;
                     break;
-
             }
         }
     }
@@ -298,11 +287,6 @@ public class Tortoise implements IGameObject {
             if (obj instanceof Tortoise) {
                 Tortoise tortoise = (Tortoise) obj;
                 if (tortoise.state == 2 && tortoise.IsMove) {
-//	    				if(tortoise.getX()+tortoise.width/2<x+width/2){
-//	    					dropFlag=true;
-//	    				}else{
-//	    					dropFlag=false;
-//	    				}
                     if (tortoise.hashCode() != this.hashCode()) {
                         if (isCollisionWithRect3(x, y, width, height, tortoise.getX(), tortoise.getY(), tortoise.getWidth(), tortoise.getHeight())) {
                             state = 3;
@@ -317,7 +301,7 @@ public class Tortoise implements IGameObject {
         for (IGameObject obj : bitmaps) {
             if (obj instanceof Road) {
                 Road road = (Road) obj;
-                if (road.model != 3) {
+                if (road.mode != 3) {
                     if (isCollisionWithRect(x, y, width, height, road.getX(), road.getY(), road.getWidth(), road.getHeight())) {
                         if (now.size() != 0)
                             now.clear();
@@ -326,7 +310,7 @@ public class Tortoise implements IGameObject {
                                 now.add(road);
                         }
                     } else {
-                        switch (road.model) {
+                        switch (road.mode) {
                             case 0:
                                 if (now.size() == 1) {
                                     now.remove(road);
@@ -341,7 +325,6 @@ public class Tortoise implements IGameObject {
 
                     }
                 }
-
             }
         }
         if (now.size() == 1) {

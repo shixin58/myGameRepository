@@ -27,6 +27,7 @@ public class Monster implements IGameObject {
         } else {
             direction = false;
         }
+
         sprites.add(Bitmap.createBitmap(bitmap, 0, 0, width, height));
         sprites.add(Bitmap.createBitmap(bitmap, width, 0, width, height));
         sprites.add(Bitmap.createBitmap(bitmap, 2 * width, 0, width, height));
@@ -63,7 +64,7 @@ public class Monster implements IGameObject {
                 speed++;
             }
             y += speed;
-            if (y >= gameView.ScreenHeight)
+            if (y >= gameView.mScreenHeight)
                 gameView.monsters.remove(this);
         }
         if (now.size() == 1) {
@@ -92,7 +93,7 @@ public class Monster implements IGameObject {
                     break;
                 case 2:
                     x += 2;
-                    if (x >= gameView.ScreenWidth)
+                    if (x >= gameView.mScreenWidth)
                         gameView.monsters.remove(this);
                     break;
                 case 3:
@@ -108,7 +109,7 @@ public class Monster implements IGameObject {
                         }
                     } else {
                         x += 3;
-                        if (x >= gameView.ScreenWidth - width) {
+                        if (x >= gameView.mScreenWidth - width) {
                             direction = true;
                         }
                     }
@@ -133,7 +134,7 @@ public class Monster implements IGameObject {
                 gameView.monsters.remove(this);
                 gameView.explodes.add(new Explode(x, y, 2, gameView));
                 AddScore score = new AddScore(x, y, mode, gameView);
-                gameView.mys.add(score);
+                gameView.mHeroes.add(score);
                 switch (mode) {
                     case 1:
                         gameView.AllScore += 5;
@@ -166,7 +167,7 @@ public class Monster implements IGameObject {
                     dropSpeed++;
                 y += dropSpeed;
             }
-            if (x <= -width || x >= gameView.ScreenWidth || y >= gameView.ScreenHeight)
+            if (x <= -width || x >= gameView.mScreenWidth || y >= gameView.mScreenHeight)
                 gameView.monsters.remove(this);
         }
         return bitmap;
@@ -174,10 +175,7 @@ public class Monster implements IGameObject {
 
     public boolean isCollisionWithRect3(int x1, int y1, int w1, int h1,
                                         int x2, int y2, int w2, int h2) {
-        if (x1 + w1 >= x2 + 15 && y1 + h1 >= y2 && x1 <= x2 + w2 - 15 && y1 <= y2 + h2) {
-            return true;
-        }
-        return false;
+        return x1 + w1 >= x2 + 15 && y1 + h1 >= y2 && x1 <= x2 + w2 - 15 && y1 <= y2 + h2;
     }
 
     public int isCollisionWithRect2(int x1, int y1, int w1, int h1,
@@ -200,10 +198,7 @@ public class Monster implements IGameObject {
 
     public boolean isCollisionWithRect(int x1, int y1, int w1, int h1,
                                        int x2, int y2, int w2, int h2) {
-        if (x1 + w1 >= x2 + 10 && y1 + h1 >= y2 && x1 <= x2 + w2 - 10 && y1 + h1 * 3 / 4 <= y2) {
-            return true;
-        }
-        return false;
+        return x1 + w1 >= x2 + 10 && y1 + h1 >= y2 && x1 <= x2 + w2 - 10 && y1 + h1 * 3 / 4 <= y2;
     }
 
     public void IsImpact(SuperMario jTest) {
@@ -211,7 +206,7 @@ public class Monster implements IGameObject {
             case 1:
                 if (state == 1) {
                     //if(IsOnRoad){
-                    jTest.YdirectionFlag = true;
+                    jTest.yDirectionFlag = true;
                     jTest.speed = 10;
                     state = 2;
                     //}
@@ -219,11 +214,9 @@ public class Monster implements IGameObject {
                 break;
             case 2:
                 if (state == 1)
-                    jTest.state = false;
+                    jTest.mAlive = false;
                 break;
-
         }
-
     }
 
     public void IsImpactTortoise(List<IGameObject> bitmaps) {
@@ -252,7 +245,7 @@ public class Monster implements IGameObject {
         for (IGameObject obj : bitmaps) {
             if (obj instanceof Road) {
                 Road road = (Road) obj;
-                if (road.model != 3) {
+                if (road.mode != 3) {
                     if (isCollisionWithRect(x, y, width, height, road.getX(), road.getY(), road.getWidth(), road.getHeight())) {
                         if (now.size() != 0)
                             now.clear();
@@ -262,7 +255,7 @@ public class Monster implements IGameObject {
                         }
 
                     } else {
-                        switch (road.model) {
+                        switch (road.mode) {
                             case 0:
                                 if (now.size() == 1) {
                                     now.remove(road);
