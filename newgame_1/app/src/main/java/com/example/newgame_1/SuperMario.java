@@ -9,9 +9,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SuperMario implements IGameObject {
 
-    public static final int MAX_SPEED = 25;
+    private static final float DEN = GameApplication.INSTANCE.getResources().getDisplayMetrics().density;
 
-    public int x, y, width, height, speed = MAX_SPEED, speedTime = 0, count = 0, stop = 0, mTimes = 0, speedDrop = 0;
+    public static final int MAX_SPEED_JUMP = 25;
+
+    public static final int SPEED_MOVE = (int) (4 * DEN);
+
+    public int x, y, width, height, speed = MAX_SPEED_JUMP, speedTime = 0, count = 0, stop = 0, mTimes = 0, speedDrop = 0;
 
     public int mMoveIdx = 0, mMoveSize = 2, mMoveFirst = 0;
 
@@ -19,8 +23,8 @@ public class SuperMario implements IGameObject {
 
     private GameView gameView;
 
-    public boolean mIsJump = false, mIsMove = false, mIsStop = true, xDirectionFlag = true, IsAdd = true,
-            yDirectionFlag = true, Isdo = false, mAlive = true, speedflag = true, test = false, stateYflag = true;
+    public boolean mIsJump = false, mIsMove = false, mIsStop = true, xDirectionFlag/*控制左右*/ = true, IsAdd = true,
+            yDirectionFlag/*控制上下*/ = true, Isdo = false, mAlive = true, speedflag = true, test = false, stateYflag = true;
 
     private List<Bitmap> mSprites = new CopyOnWriteArrayList<>();
 
@@ -79,9 +83,9 @@ public class SuperMario implements IGameObject {
             // 死亡
             bitmap = mDeadBm;
             mTimes++;
-            if (mTimes >= MAX_SPEED) {
+            if (mTimes >= MAX_SPEED_JUMP) {
                 if (speedflag) {
-                    speed = MAX_SPEED;
+                    speed = MAX_SPEED_JUMP;
                     speedflag = false;
                 }
                 if (stateYflag) {
@@ -117,11 +121,11 @@ public class SuperMario implements IGameObject {
                 if (stop == 1) {
                     if (xDirectionFlag) {
                         if (x <= gameView.mScreenWidth - width) {
-                            x += 5;
+                            x += SPEED_MOVE;
                         }
                     } else {
                         if (x > 0) {
-                            x -= 5;
+                            x -= SPEED_MOVE;
                         }
                     }
                     stop = 0;
@@ -137,7 +141,7 @@ public class SuperMario implements IGameObject {
             }
             if (Isdo) {
                 if (!mIsJump) {
-                    if (speedDrop < MAX_SPEED) {
+                    if (speedDrop < MAX_SPEED_JUMP) {
                         speedDrop++;
                     }
                     speedTime++;
@@ -152,13 +156,13 @@ public class SuperMario implements IGameObject {
                     if (now.get(0) instanceof BombA) {
                         BombA bombA = (BombA) now.get(0);
                         switch (bombA.mode) {
-                            case 1:
+                            case BombA.MODE_LEFT_BLACK:
                                 setY(now.get(0).getY() - height);
                                 if (x > 0) {
                                     x -= bombA.speed;
                                 }
                                 break;
-                            case 2:
+                            case BombA.MODE_RIGHT_BLACK:
                                 setY(now.get(0).getY() - height);
                                 if (x < gameView.mScreenWidth - width) {
                                     x += bombA.speed;
@@ -167,7 +171,7 @@ public class SuperMario implements IGameObject {
                         }
                     } else {
                         Road road = (Road) now.get(0);
-                        if (road.mode == 1) {
+                        if (road.mode == Road.MODE_MOVE_VERTICAL) {
                             Isdo = false;
                             if (!mIsJump) {
                                 setY(now.get(0).getY() - height);
@@ -180,7 +184,7 @@ public class SuperMario implements IGameObject {
             }
             if (mIsStop) {
                 mIsJump = false;
-                speed = MAX_SPEED;
+                speed = MAX_SPEED_JUMP;
                 yDirectionFlag = true;
             }
         }
@@ -233,18 +237,18 @@ public class SuperMario implements IGameObject {
                         now.add(road);
                     } else {
                         switch (road.mode) {
-                            case 0:
+                            case Road.MODE_STILL:
                                 if (now.size() == 1) {
                                     now.remove(road);
                                 }
-                            case 2:
+                            case Road.MODE_MOVE_HORIZONTAL:
                                 if (now.size() == 1) {
                                     now.remove(road);
                                 }
                                 if (!mIsJump) {
                                     Isdo = true;
                                 }
-                            case 3:
+                            case Road.MODE_MOVE_HORIZONTAL_TURRET:
                                 if (now.size() == 1) {
                                     now.remove(road);
                                 }

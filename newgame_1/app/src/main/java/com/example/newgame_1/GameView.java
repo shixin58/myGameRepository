@@ -1,6 +1,7 @@
 package com.example.newgame_1;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -21,12 +22,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
     private SurfaceHolder mHolder;
     // 定义二级缓存bitmap
     private Bitmap mBmGameCache;
+
     // 定义资源图片
     public Bitmap mBmRoad_1, mBmRoad_2, mBmRoad_3,
             mBmGround_1/*未用到*/, mBmGround_2,
             mBullet_1, mBullet_2,
             mFlyMonster,
             mBmTortoise, mBmTortoiseDead;
+
     // 定义马里奥对象
     public SuperMario mMario;
 
@@ -35,22 +38,28 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
             mRoad1, mRoad2, mRoad3, mRoad4;
 
     // 定义背景
-    private BgMap GameBg;
-    private float Alltime = 0;
+    private BgMap mGameBg;
+    private float mAlltime = 0;
     public int mScreenWidth, mScreenHeight, StartY, AllScore = 0;
     public int timeA = 0, limmitA = 200, timeS = 0, limmitS = 20;
     public int CountStar = 0;
-    public boolean IsAddStar = true, stopstate = false;
+    public boolean isAddStar = true, stopstate = false;
+    private Typeface typeface;
     private Paint mPaint, mPaintScore;
     public Random random = new Random();
-    private Thread thread1, thread2, thread3;
-    private Typeface typeface;
-    private boolean MainThreadFlag = true, IsAddMonsterA = true;
+    private Thread mDrawThread, mDetectionThread, mAddSpriteThread;
+    private boolean MainThreadFlag = true, isAddMonsterA = true;
 
     public List<IGameObject> mRoads = new CopyOnWriteArrayList<>();
+
     public List<IGameObject> mHeroes = new CopyOnWriteArrayList<>();
+
     public List<IGameObject> stars = new CopyOnWriteArrayList<>();
+
+    /** FlyMonster, Tortoise, Monster */
     public List<IGameObject> monsters = new CopyOnWriteArrayList<>();
+
+    /** Explode */
     public List<IGameObject> explodes = new CopyOnWriteArrayList<>();
 
     public GameView(Context context, AttributeSet attrs) {
@@ -63,7 +72,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
         mScreenWidth = dm.widthPixels;
         mScreenHeight = dm.heightPixels;
         mBmGameCache = Bitmap.createBitmap(mScreenWidth, mScreenHeight, Config.ARGB_8888);// 初始化二级缓存bitmap
-        GameBg = new BgMap(this);
+        mGameBg = new BgMap(this);
 
         // 加载资源图片
         mBmGround_1 = BitmapFactory.decodeResource(getResources(), R.drawable.ground_1);
@@ -102,22 +111,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
         // 右下方地面
         mGround_2 = new Road(mBmGround_2, mScreenWidth - mBmGround_2.getWidth(), mScreenHeight - mBmGround_2.getHeight(), 0, this);
         // 上下移动
-        mRoad1 = new Road(mBmRoad_2, (int) (300 * den), (int) (120 * den), 1, this);
+        mRoad1 = new Road(mBmRoad_2, (int) (300 * den), (int) (120 * den), Road.MODE_MOVE_VERTICAL, this);
         // 左右移动
-        mRoad2 = new Road(mBmRoad_2, (int) (150 * den), (int) (180 * den), 2, this);
+        mRoad2 = new Road(mBmRoad_2, (int) (150 * den), (int) (200 * den), Road.MODE_MOVE_HORIZONTAL, this);
         // 长板、低处、静止
-        mRoad3 = new Road(mBmRoad_1, (int) (480 * den), (int) (200 * den), 0, this);
+        mRoad3 = new Road(mBmRoad_1, (int) (480 * den), (int) (200 * den), Road.MODE_STILL, this);
         // 短板、高处、静止
-        mRoad4 = new Road(mBmRoad_3, (int) (580 * den), (int) (100 * den), 0, this);
+        mRoad4 = new Road(mBmRoad_3, (int) (580 * den), (int) (100 * den), Road.MODE_STILL, this);
 
         // 初始化特殊路-炮塔对象
         Bitmap bmTurret = BitmapFactory.decodeResource(getResources(), R.drawable.turret);
-        Road turretRoad = new Road(bmTurret, (int) (210 * den), (int) (180 * den - bmTurret.getHeight()), 3, this);
+        Road turretRoad = new Road(bmTurret, (int) (210 * den), mRoad2.y - bmTurret.getHeight(), Road.MODE_MOVE_HORIZONTAL_TURRET, this);
 
-        // 初始化马里奥对象
-        mMario = new SuperMario((int) (60 * den), mScreenHeight * 3 / 4, this);
-
-        // 将各个对象放入各绘制容器
         mRoads.add(mRoad1);
         mRoads.add(mRoad2);
         mRoads.add(mRoad3);
@@ -125,21 +130,25 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
         mRoads.add(mGround_1);
         mRoads.add(mGround_2);
         mRoads.add(turretRoad);
+
+        // 初始化马里奥对象
+        mMario = new SuperMario((int) (60 * den), mScreenHeight * 3 / 4, this);
         mHeroes.add(mMario);
     }
 
     public void mainDraw() {
-        Alltime += 0.03f;
+        mAlltime += 0.03f;
         Canvas c = new Canvas(mBmGameCache);//获取缓存bitmap的画布
-        c.drawBitmap(GameBg.getBitmap(), GameBg.getX(), GameBg.getY(), mPaint);
+        c.drawBitmap(mGameBg.getBitmap(), mGameBg.getX(), mGameBg.getY(), mPaint);
+
         for (IGameObject prop : stars) {
             c.drawBitmap(prop.getBitmap(), prop.getX(), prop.getY(), mPaint);
         }
-        c.drawText("时间: " + String.format("%.2f", Alltime), 20, 60, mPaintScore);
-        c.drawText("金币: ", mScreenWidth / 2 - 90, 60, mPaintScore);
+
+        c.drawText("时间: " + String.format(Locale.getDefault(), "%.2f", mAlltime), 20, 60, mPaintScore);
+        c.drawText("金币: ", mScreenWidth / 2f - 90, 60, mPaintScore);
         c.drawText("分数: " + AllScore, mScreenWidth - 300, 60, mPaintScore);
-//    	c.drawText("IsJump: "+jumpTest.IsJump, ScreenWidth-300,80, scorepaint);
-//    	c.drawText("size: "+jumpTest.now.size(), ScreenWidth-300,120, scorepaint);
+
         for (IGameObject prop : mRoads) {
             c.drawBitmap(prop.getBitmap(), prop.getX(), prop.getY(), mPaint);
         }
@@ -212,9 +221,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
 
     public void start() {
         stopstate = false;
-        thread1.interrupt();
-        thread2.interrupt();
-        thread3.interrupt();
+        mDrawThread.interrupt();
+        mDetectionThread.interrupt();
+        mAddSpriteThread.interrupt();
     }
 
     @Override
@@ -237,12 +246,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
-        thread1 = new Thread(this);
-        thread1.start();
-        thread2 = new Thread(new DetectionTask());
-        thread2.start();
-        thread3 = new Thread(new AddSpriteTask(this));
-        thread3.start();
+        mDrawThread = new Thread(this);
+        mDrawThread.start();
+
+        mDetectionThread = new Thread(new DetectionTask());
+        mDetectionThread.start();
+
+        mAddSpriteThread = new Thread(new AddSpriteTask(this));
+        mAddSpriteThread.start();
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
@@ -295,7 +306,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
                     if (road != null) {
                         if (isCollisionWithRect2(my.x, my.y, my.width, my.height, road.getX(), road.getY(), road.getWidth(), road.getHeight())) {
                             switch (road.mode) {
-                                case 1:
+                                case Road.MODE_MOVE_VERTICAL:
                                     if (my.now.size() == 1) {
                                         my.now.remove(road);
                                     }
@@ -340,7 +351,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
                             if (monster != null) {
                                 if (isCollisionWithRect2(monster.x, monster.y, monster.width, monster.height, road.getX(), road.getY(), road.getWidth(), road.getHeight())) {
                                     switch (road.mode) {
-                                        case 1:
+                                        case Road.MODE_MOVE_VERTICAL:
                                             if (monster.now.size() == 1) {
                                                 monster.now.remove(road);
                                             }
@@ -352,7 +363,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
                             if (tortoise != null) {
                                 if (isCollisionWithRect2(tortoise.x, tortoise.y, tortoise.width, tortoise.height, road.getX(), road.getY(), road.getWidth(), road.getHeight())) {
                                     switch (road.mode) {
-                                        case 1:
+                                        case Road.MODE_MOVE_VERTICAL:
                                             if (tortoise.now.size() == 1) {
                                                 tortoise.now.remove(road);
                                             }
@@ -399,10 +410,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
             }
         }
 
-        public void addSprite() {
+        private void addSprite() {
             timeA++;
             if (timeA >= limmitA) {
-                if (IsAddMonsterA) {
+                if (isAddMonsterA) {
                     Tortoise tortoise = new Tortoise(mBmTortoise, mBmTortoiseDead, 600, 60, 1, 2, gameView);
                     monsters.add(tortoise);
                     Monster monster = null;
@@ -414,9 +425,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
                     y = 200 - random.nextInt(200);
                     if (varB <= 10) {
                         mode = 1;
-                    } else if (varB > 10 && varB <= 20) {
+                    } else if (varB <= 20) {
                         mode = 2;
-                    } else if (varB > 20 && varB <= 30) {
+                    } else if (varB <= 30) {
                         mode = 3;
                     } else {
                         mode = 4;
@@ -426,7 +437,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
                     timeA = 0;
                 }
             }
-            if (IsAddStar) {
+            if (isAddStar) {
                 timeS++;
                 if (timeS >= limmitS) {
                     limmitS = random.nextInt(100) + 100;
@@ -435,7 +446,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback, Run
                     stars.add(star);
                     CountStar++;
                     if (CountStar >= 10) {
-                        IsAddStar = false;
+                        isAddStar = false;
                     }
                     timeS = 0;
                 }

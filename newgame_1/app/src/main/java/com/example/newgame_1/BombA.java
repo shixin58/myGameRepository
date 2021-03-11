@@ -4,6 +4,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 public class BombA implements IGameObject {
+
+    public static final int MODE_LEFT_BLACK = 1;
+    public static final int MODE_RIGHT_BLACK = 2;
+    public static final int MODE_LEFT_ORANGE = 3;
+
+    public static final int IMPACT_NONE = 0;
+    public static final int IMPACT_TOP = 1;
+    public static final int IMPACT_BOTTOM = 2;
+    public static final int IMPACT_MIDDLE = 3;
+
     public int x, y, width, height, mode, speed, deadspeed = 12;
     private Bitmap bitmap;
     private GameView gameView;
@@ -12,13 +22,13 @@ public class BombA implements IGameObject {
     public BombA(int x, int y, int mode, GameView gameView) {
         this.gameView = gameView;
         switch (mode) {
-            case 1:
+            case MODE_LEFT_BLACK:
                 this.bitmap = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.bullet_1);
                 break;
-            case 2:
+            case MODE_RIGHT_BLACK:
                 this.bitmap = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.bullet_2);
                 break;
-            case 3:
+            case MODE_LEFT_ORANGE:
                 this.bitmap = BitmapFactory.decodeResource(gameView.getResources(), R.drawable.bullet_3);
                 break;
         }
@@ -55,7 +65,7 @@ public class BombA implements IGameObject {
     @Override
     public Bitmap getBitmap() {
         switch (mode) {
-            case 1:
+            case MODE_LEFT_BLACK:
                 if (state) {
                     x -= speed;
                     if (x <= -width)
@@ -78,7 +88,7 @@ public class BombA implements IGameObject {
                     }
                 }
                 break;
-            case 2:
+            case MODE_RIGHT_BLACK:
                 if (state) {
                     x += speed;
                     if (x >= gameView.mScreenWidth)
@@ -100,7 +110,7 @@ public class BombA implements IGameObject {
                     }
                 }
                 break;
-            case 3:
+            case MODE_LEFT_ORANGE:
                 if (state) {
                     x -= speed;
                     if (x >= gameView.mScreenWidth)
@@ -129,36 +139,33 @@ public class BombA implements IGameObject {
     public int isCollisionWithRect(int x1, int y1, int w1, int h1,
                                    int x2, int y2, int w2, int h2) {
         if (y1 + h1 < y2) {
+            // Mario在子弹上边
             IsDoT = true;
             IsDoB = false;
         } else if (y1 > y2 + h2) {
+            // 子弹下边
             IsDoB = true;
             IsDoT = false;
         } else if (x1 + w1 < x2 || x1 > x2 + w2) {
-            if (y1 + h1 != y2) {
+            // 子弹左边或右边
+            if (y1 + h1 != y2 && y1 != y2 + h2) {
                 IsDoB = false;
                 IsDoT = false;
                 IsDo = true;
             }
         }
 
-        final boolean b = x1 + w1 >= x2 + 15 && y1 + h1 >= y2 && x1 <= x2 + w2 - 15 && y1 <= y2 + h2;
-        if (IsDoT) {
-            if (b) {
-                return 1;
-            }
+        final boolean b = isCollisionWithRect2(x1, y1, w1, h1, x2, y2, w2, h2);
+        if (IsDoT && b) {
+            return IMPACT_TOP;
         }
-        if (IsDoB) {
-            if (b) {
-                return 2;
-            }
+        if (IsDoB && b) {
+            return IMPACT_BOTTOM;
         }
-        if (IsDo) {
-            if (b) {
-                return 3;
-            }
+        if (IsDo && b) {
+            return IMPACT_MIDDLE;
         }
-        return 0;
+        return IMPACT_NONE;
     }
 
     public boolean isCollisionWithRect2(int x1, int y1, int w1, int h1,
@@ -168,20 +175,21 @@ public class BombA implements IGameObject {
 
     public void IsImpact(SuperMario hero) {
         switch (mode) {
-            case 1:
-            case 2:
+            case MODE_LEFT_BLACK:
+            case MODE_RIGHT_BLACK:
                 switch (isCollisionWithRect(hero.getX(), hero.getY(), hero.getWidth(), hero.getHeight(), x, y, width, height)) {
-                    case 0:
+                    case IMPACT_NONE:
                         if (hero.now.size() == 1) {
                             hero.now.remove(this);
                         }
                         break;
-                    case 1:
+                    case IMPACT_TOP:
                         if (hero.now.size() != 0) {
                             if (hero.now.get(0) instanceof Road) {
                                 Road road = (Road) hero.now.get(0);
-                                if (road.mode != 3 && state)
+                                if (road.mode != Road.MODE_MOVE_HORIZONTAL_TURRET && state) {
                                     hero.mAlive = false;
+                                }
                             } else {
                                 hero.now.clear();
                             }
@@ -191,18 +199,18 @@ public class BombA implements IGameObject {
                                 hero.now.add(this);
                         }
                         break;
-                    case 2:
+                    case IMPACT_BOTTOM:
                         state = false;
                         if (hero.now.size() == 1) {
                             hero.now.remove(this);
                         }
                         break;
-                    case 3:
+                    case IMPACT_MIDDLE:
                         hero.mAlive = false;
                         break;
                 }
                 break;
-            case 3:
+            case MODE_LEFT_ORANGE:
                 if (isCollisionWithRect2(hero.getX(), hero.getY(), hero.getWidth(), hero.getHeight(), x, y, width, height)) {
                     hero.mAlive = false;
                 }

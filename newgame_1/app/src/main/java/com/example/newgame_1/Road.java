@@ -4,11 +4,16 @@ import android.graphics.Bitmap;
 
 public class Road implements IGameObject {
 
+    public static final int MODE_STILL = 0;
+    public static final int MODE_MOVE_VERTICAL = 1;
+    public static final int MODE_MOVE_HORIZONTAL = 2;
+    public static final int MODE_MOVE_HORIZONTAL_TURRET = 3;
+
     public int x, y, width, height, mode, speed = 7, startY,
             startX, time = 0, addtime = 0, limittime = 200;
     private Bitmap bitmap;
     private GameView gameView;
-    public boolean Isdo = false, direction = true, state = true;
+    public boolean Isdo = false, direction/*向左or向上*/ = true, state = true;
 
     public Road(Bitmap bitmap, int x, int y, int mode, GameView gameView) {
         this.bitmap = bitmap;
@@ -45,8 +50,9 @@ public class Road implements IGameObject {
     @Override
     public Bitmap getBitmap() {
         switch (mode) {
-            case 1:
+            case MODE_MOVE_VERTICAL:
                 if (direction) {
+                    // 向上减速
                     time++;
                     if (time >= 5) {
                         speed--;
@@ -58,6 +64,7 @@ public class Road implements IGameObject {
                         direction = false;
                     }
                 } else {
+                    // 向下加速
                     time++;
                     if (time >= 5) {
                         if (speed < 7)
@@ -71,8 +78,9 @@ public class Road implements IGameObject {
                     }
                 }
                 break;
-            case 2:
+            case MODE_MOVE_HORIZONTAL:
                 if (direction) {
+                    // 向左减速
                     time++;
                     if (time >= 10) {
                         speed--;
@@ -84,6 +92,7 @@ public class Road implements IGameObject {
                         direction = false;
                     }
                 } else {
+                    // 向右加速
                     time++;
                     if (time >= 10) {
                         if (speed < 7)
@@ -97,8 +106,9 @@ public class Road implements IGameObject {
                     }
                 }
                 break;
-            case 3:
+            case MODE_MOVE_HORIZONTAL_TURRET:
                 if (direction) {
+                    // 向左减速
                     time++;
                     if (time >= 10) {
                         speed--;
@@ -110,6 +120,7 @@ public class Road implements IGameObject {
                         direction = false;
                     }
                 } else {
+                    // 向右加速
                     time++;
                     if (time >= 10) {
                         if (speed < 7)
@@ -131,7 +142,7 @@ public class Road implements IGameObject {
                     if (var <= 10) {
                         nowMode = 1;
                         nowX = x - gameView.mBullet_1.getWidth();
-                    } else if (var > 10 && var <= 20) {
+                    } else if (var <= 20) {
                         nowMode = 2;
                         nowX = x + width;
                     } else {

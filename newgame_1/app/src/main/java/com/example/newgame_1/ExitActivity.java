@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -22,8 +23,8 @@ public class ExitActivity extends Activity implements OnClickListener {
     private TimerTask task = new TimerTask() {
         @Override
         public void run() {
-            Intent intenttwo = new Intent(ExitActivity.this, StartActivity.class);
-            startActivity(intenttwo);
+            Intent startIntent = new Intent(ExitActivity.this, StartActivity.class);
+            startActivity(startIntent);
             ExitActivity.this.finish();
         }
     };
@@ -33,7 +34,7 @@ public class ExitActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.exitlayout);
+        setContentView(R.layout.activity_exit);
         Intent intent = getIntent();
         tag = intent.getStringExtra("TagText");
         code = intent.getStringExtra("code");
@@ -43,14 +44,14 @@ public class ExitActivity extends Activity implements OnClickListener {
         yes.setOnClickListener(this);
         no.setOnClickListener(this);
 
-        if (tag != null && tag != "") {
+        if (!TextUtils.isEmpty(tag)) {
             if (tag.trim().equals("wenda")) {
                 hint.setText("退出游戏或者返回主界面？");
                 yes.setText("退出");
                 no.setText("返回");
             }
         }
-        if (code != "" && code != null) {
+        if (!TextUtils.isEmpty(code)) {
             hint.setLines(1);
             if (code.trim().equals("1")) {
                 hint.setText("欢迎作者进入趣味问答模块");
@@ -80,7 +81,6 @@ public class ExitActivity extends Activity implements OnClickListener {
                 timer.schedule(task, 5000);
             }
         }
-
     }
 
     @Override
@@ -106,7 +106,7 @@ public class ExitActivity extends Activity implements OnClickListener {
         switch (v.getId()) {
             case R.id.yes:
                 ExitActivity.this.finish();
-                if (tag != "" && tag != null) {
+                if (!TextUtils.isEmpty(tag)) {
                     if (tag.trim().equals("start")) {
                         StartActivity.instance.finish();
                     } else if (tag.trim().equals("main")) {
@@ -115,7 +115,7 @@ public class ExitActivity extends Activity implements OnClickListener {
                         QuizActivity.instance.finish();
                     }
                 }
-                if (code != "" && code != null) {
+                if (!TextUtils.isEmpty(code)) {
                     if (code.trim().equals("1") || code.trim().equals("2")) {
                         StartActivity.instance.finish();
                         Intent intenttwo = new Intent(ExitActivity.this, QuizActivity.class);
@@ -126,13 +126,13 @@ public class ExitActivity extends Activity implements OnClickListener {
                 break;
 
             case R.id.no:
-                if (tag != "" && tag != null) {
+                if (!TextUtils.isEmpty(tag)) {
                     if (tag.trim().equals("start")) {
                         Intent intenttwo = new Intent(ExitActivity.this, StartActivity.class);
                         startActivity(intenttwo);
                         ExitActivity.this.finish();
                     } else if (tag.trim().equals("main")) {
-                        MainActivity.instance.gameView.start();
+                        MainActivity.instance.mGameView.start();
                         Intent intenttwo = new Intent(ExitActivity.this, MainActivity.class);
                         startActivity(intenttwo);
                         ExitActivity.this.finish();
@@ -143,7 +143,7 @@ public class ExitActivity extends Activity implements OnClickListener {
                         ExitActivity.this.finish();
                     }
                 }
-                if (code != "" && code != null) {
+                if (!TextUtils.isEmpty(code)) {
                     if (code.trim().equals("1") || code.trim().equals("2")) {
                         Intent intenttwo = new Intent(ExitActivity.this, StartActivity.class);
                         startActivity(intenttwo);

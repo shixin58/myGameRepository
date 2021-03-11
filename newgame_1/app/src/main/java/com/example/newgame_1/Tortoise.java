@@ -301,22 +301,20 @@ public class Tortoise implements IGameObject {
         for (IGameObject obj : bitmaps) {
             if (obj instanceof Road) {
                 Road road = (Road) obj;
-                if (road.mode != 3) {
+                if (road.mode != Road.MODE_MOVE_HORIZONTAL_TURRET) {
                     if (isCollisionWithRect(x, y, width, height, road.getX(), road.getY(), road.getWidth(), road.getHeight())) {
-                        if (now.size() != 0)
-                            now.clear();
-                        if (now.size() == 0) {
-                            if (state != 3)
-                                now.add(road);
+                        now.clear();
+                        if (state != 3) {
+                            now.add(road);
                         }
                     } else {
                         switch (road.mode) {
-                            case 0:
+                            case Road.MODE_STILL:
                                 if (now.size() == 1) {
                                     now.remove(road);
                                 }
                                 break;
-                            case 2:
+                            case Road.MODE_MOVE_HORIZONTAL:
                                 if (now.size() == 1) {
                                     now.remove(road);
                                 }

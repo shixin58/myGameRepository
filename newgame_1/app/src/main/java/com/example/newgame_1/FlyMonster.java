@@ -9,7 +9,7 @@ public class FlyMonster implements IGameObject {
     private int x, y, mode, width, height, speedY = 15, speed = 0, index = 0, count = 0;
     private Bitmap bitmap;
     private GameView gameView;
-    private boolean directionY = true, directionX = true, IsDo = false, Isdo = false, IsJump = false, IsDead = false, IsAdd = true;
+    private boolean directionY = true, directionX = true, IsDo = false, Isdo = false, IsJump = false, mIsDead = false, IsAdd = true;
     private List<Bitmap> sprites = new CopyOnWriteArrayList<>();
 
     public FlyMonster(Bitmap bitmap, int x, int y, int mode, GameView gameView) {
@@ -89,15 +89,15 @@ public class FlyMonster implements IGameObject {
             }
 
         }
-        if (IsDead) {
+        if (mIsDead) {
             if (IsAdd) {
                 int varB = gameView.random.nextInt(40);
                 int model = 0;
                 if (varB <= 10) {
                     model = 1;
-                } else if (varB > 10 && varB <= 20) {
+                } else if (varB <= 20) {
                     model = 2;
-                } else if (varB > 20 && varB <= 30) {
+                } else if (varB <= 30) {
                     model = 3;
                 } else {
                     model = 4;
@@ -127,7 +127,7 @@ public class FlyMonster implements IGameObject {
             }
         }
         if (Isdo) {
-            if (x1 + w1 >= x2 + 15 && y1 + h1 >= y2 && x1 <= x2 + w2 - 15 && y1 <= y2 + h2) {
+            if (isCollisionWithRect(x1, y1, w1, h1, x2, y2, w2, h2)) {
                 return 1;
             }
         }
@@ -138,15 +138,15 @@ public class FlyMonster implements IGameObject {
         switch (isCollisionWithRect2(hero.getX(), hero.getY(), hero.getWidth(), hero.getHeight(), x, y, width, height)) {
             case 1:
                 if (!hero.yDirectionFlag) {
-                    if (!IsDead) {
+                    if (!mIsDead) {
                         hero.yDirectionFlag = true;
                         hero.speed = 10;
                     }
-                    IsDead = true;
+                    mIsDead = true;
                 }
                 break;
             case 2:
-                if (!IsDead)
+                if (!mIsDead)
                     hero.mAlive = false;
                 break;
         }

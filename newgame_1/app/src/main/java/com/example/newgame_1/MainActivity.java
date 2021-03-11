@@ -13,8 +13,8 @@ import android.widget.ImageButton;
 
 public class MainActivity extends Activity implements OnTouchListener {
 
-    private ImageButton left = null, right = null, jump = null;
-    public GameView gameView = null;
+    private ImageButton mLeftBtn = null, mRightBtn = null, mJumpBtn = null;
+    public GameView mGameView = null;
     public static MainActivity instance;
 
     @Override
@@ -30,22 +30,22 @@ public class MainActivity extends Activity implements OnTouchListener {
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            gameView.stop();
-            Intent intenttwo = new Intent(MainActivity.this, ExitActivity.class);
-            intenttwo.putExtra("TagText", "main");
-            startActivity(intenttwo);
+            mGameView.stop();
+            Intent exitIntent = new Intent(MainActivity.this, ExitActivity.class);
+            exitIntent.putExtra("TagText", "main");
+            startActivity(exitIntent);
         }
         return super.onKeyDown(keyCode, event);
     }
 
     public void init() {
-        gameView = (GameView) findViewById(R.id.test);
-        left = (ImageButton) findViewById(R.id.left);
-        right = (ImageButton) findViewById(R.id.right);
-        jump = (ImageButton) findViewById(R.id.jump);
-        left.setOnTouchListener(this);
-        right.setOnTouchListener(this);
-        jump.setOnTouchListener(this);
+        mGameView = (GameView) findViewById(R.id.test);
+        mLeftBtn = (ImageButton) findViewById(R.id.left);
+        mRightBtn = (ImageButton) findViewById(R.id.right);
+        mJumpBtn = (ImageButton) findViewById(R.id.jump);
+        mLeftBtn.setOnTouchListener(this);
+        mRightBtn.setOnTouchListener(this);
+        mJumpBtn.setOnTouchListener(this);
     }
 
     @Override
@@ -54,27 +54,27 @@ public class MainActivity extends Activity implements OnTouchListener {
             case MotionEvent.ACTION_DOWN:
                 switch (v.getId()) {
                     case R.id.left:
-                        gameView.mMario.mIsMove = true;
-                        gameView.mMario.xDirectionFlag = false;
-                        gameView.mMario.mMoveFirst = 2;
-                        gameView.mMario.mMoveIdx = gameView.mMario.mMoveFirst;
-                        gameView.mMario.mMoveSize = 4;
-                        left.setBackgroundResource(R.drawable.key_left_red);
+                        mGameView.mMario.mIsMove = true;
+                        mGameView.mMario.xDirectionFlag = false;
+                        mGameView.mMario.mMoveFirst = 2;
+                        mGameView.mMario.mMoveIdx = mGameView.mMario.mMoveFirst;
+                        mGameView.mMario.mMoveSize = 4;
+                        mLeftBtn.setBackgroundResource(R.drawable.key_left_red);
                         break;
                     case R.id.right:
-                        gameView.mMario.mIsMove = true;
-                        gameView.mMario.xDirectionFlag = true;
-                        gameView.mMario.mMoveFirst = 0;
-                        gameView.mMario.mMoveIdx = gameView.mMario.mMoveFirst;
-                        gameView.mMario.mMoveSize = 2;
-                        right.setBackgroundResource(R.drawable.key_right_red);
+                        mGameView.mMario.mIsMove = true;
+                        mGameView.mMario.xDirectionFlag = true;
+                        mGameView.mMario.mMoveFirst = 0;
+                        mGameView.mMario.mMoveIdx = mGameView.mMario.mMoveFirst;
+                        mGameView.mMario.mMoveSize = 2;
+                        mRightBtn.setBackgroundResource(R.drawable.key_right_red);
                         break;
                     case R.id.jump:
-                        if (!gameView.mMario.mIsJump && gameView.mMario.mAlive && !gameView.mMario.Isdo) {
-                            gameView.mMario.Isdo = false;
-                            gameView.mMario.mIsStop = false;
-                            gameView.mMario.mIsJump = true;
-                            jump.setBackgroundResource(R.drawable.key_jump_red);
+                        if (!mGameView.mMario.mIsJump && mGameView.mMario.mAlive && !mGameView.mMario.Isdo) {
+                            mGameView.mMario.Isdo = false;
+                            mGameView.mMario.mIsStop = false;
+                            mGameView.mMario.mIsJump = true;
+                            mJumpBtn.setBackgroundResource(R.drawable.key_jump_red);
                         }
                         break;
                 }
@@ -82,15 +82,15 @@ public class MainActivity extends Activity implements OnTouchListener {
             case MotionEvent.ACTION_UP:
                 switch (v.getId()) {
                     case R.id.left:
-                        left.setBackgroundResource(R.drawable.key_left_blue);
-                        gameView.mMario.mIsMove = false;
+                        mLeftBtn.setBackgroundResource(R.drawable.key_left_blue);
+                        mGameView.mMario.mIsMove = false;
                         break;
                     case R.id.right:
-                        right.setBackgroundResource(R.drawable.key_right_blue);
-                        gameView.mMario.mIsMove = false;
+                        mRightBtn.setBackgroundResource(R.drawable.key_right_blue);
+                        mGameView.mMario.mIsMove = false;
                         break;
                     case R.id.jump:
-                        jump.setBackgroundResource(R.drawable.key_jump_blue);
+                        mJumpBtn.setBackgroundResource(R.drawable.key_jump_blue);
                         break;
                 }
                 break;
