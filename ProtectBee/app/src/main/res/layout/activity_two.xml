@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/twolayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.example.administrator.mylovegame.GameView
+        android:id="@+id/gameview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageButton
+        android:id="@+id/pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@mipmap/pause_p" />
+
+    <ImageButton
+        android:id="@+id/bomb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@+id/pause"
+        android:layout_toLeftOf="@+id/pause"
+        android:background="@drawable/bomb" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="120dp"
+        android:layout_height="10dp"
+        android:layout_above="@+id/bomb"
+        android:layout_alignEnd="@+id/bomb"
+        android:layout_alignRight="@+id/bomb"
+        android:background="@null"
+        android:indeterminate="false"
+        android:indeterminateOnly="false"
+        android:max="5000"
+        android:progress="5000"
+        android:progressDrawable="@drawable/style_progress" />
+
+</RelativeLayout>

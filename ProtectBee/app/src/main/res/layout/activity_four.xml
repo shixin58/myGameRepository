@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/explainbg">
+
+    <Button
+        android:id="@+id/gameexplain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/style_btn"
+        android:text="游戏说明"
+        android:textColor="#660099"
+        android:textSize="25sp" />
+
+    <Button
+        android:id="@+id/play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/gameexplain"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="15dp"
+        android:background="@drawable/style_btn"
+        android:text="开始游戏"
+        android:textColor="#660099"
+        android:textSize="25sp" />
+
+    <ScrollView
+        android:id="@+id/myScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp">
+
+        <LinearLayout
+            android:id="@+id/mylin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/explain_bee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/style_btn"
+                android:text="小蜜蜂"
+                android:textColor="#660099"
+                android:textSize="25sp" />
+
+            <Button
+                android:id="@+id/explain_birdie"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/explain_bee"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/style_btn"
+                android:text="怪物乌鸦"
+                android:textColor="#660099"
+                android:textSize="25sp" />
+
+            <Button
+                android:id="@+id/explain_demon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/explain_birdie"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/style_btn"
+                android:text="小恶魔"
+                android:textColor="#660099"
+                android:textSize="25sp" />
+
+            <Button
+                android:id="@+id/explain_dragon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/explain_demon"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/style_btn"
+                android:text="喷火龙"
+                android:textColor="#660099"
+                android:textSize="25sp" />
+
+            <Button
+                android:id="@+id/explain_doctor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/explain_dragon"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/style_btn"
+                android:text="小咕噜"
+                android:textColor="#660099"
+                android:textSize="25sp" />
+
+            <Button
+                android:id="@+id/explain_big"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/explain_doctor"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/style_btn"
+                android:text="大乌鸦"
+                android:textColor="#660099"
+                android:textSize="25sp" />
+
+            <Button
+                android:id="@+id/explain_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/explain_big"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/style_btn"
+                android:text="小乌鸦"
+                android:textColor="#660099"
+                android:textSize="25sp" />
+
+            <Button
+                android:id="@+id/explain_bat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/explain_small"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/style_btn"
+                android:text="恶魔蝙蝠"
+                android:textColor="#660099"
+                android:textSize="25sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/explaintext"
+        android:layout_width="400dp"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:alpha="0.8"
+        android:background="@drawable/style_text"
+        android:padding="8dp"
+        android:textColor="#660099"
+        android:textSize="20sp"
+        android:visibility="invisible" />
+
+    <com.ant.liao.GifView
+        android:id="@+id/jieshuo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>
